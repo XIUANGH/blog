@@ -2,23 +2,23 @@
 <article class="post-single">
 <div class="post-content">
     <!-- 按文件夹结构显示文章 -->
-    {{ \$pages := .Site.RegularPages }}
-    {{ \$sections := slice }}
-    {{ range \$pages }}
-    {{ \$section := path.Dir .File.Path }}
-    {{ if and (ne \$section ".") (ne \$section "posts") }}
-        {{ if not (in \$sections \$section) }}
-        {{ \$sections = \$sections | append \$section }}
+    {{ $pages := .Site.RegularPages }}
+    {{ $sections := slice }}
+    {{ range $pages }}
+    {{ $section := path.Dir .File.Path }}
+    {{ if and (ne $section ".") (ne $section "posts") }}
+        {{ if not (in $sections $section) }}
+        {{ $sections = $sections | append $section }}
         {{ end }}
     {{ end }}
     {{ end }}
     
     <!-- 首先显示根目录文章 -->
-    {{ \$rootPages := where \$pages "File.Dir" "posts/" }}
-    {{ if \$rootPages }}
+    {{ $rootPages := where $pages "File.Dir" "posts/" }}
+    {{ if $rootPages }}
     <div class="folder">
     <ul>
-        {{ range sort \$rootPages "Title" }}
+        {{ range sort $rootPages "Title" }}
         <li>
             <a href="{{ .Permalink }}">{{ .Title }}</a>
             <span class="post-date">{{ .Date.Format "2006-01-02" }}</span>
@@ -29,13 +29,13 @@
     {{ end }}
     
     <!-- 然后显示其他文件夹 -->
-    {{ range sort \$sections }}
-    {{ \$section := . }}
+    {{ range sort $sections }}
+    {{ $section := . }}
     <div class="folder">
         <h3>📁 {{ . }}</h3>
         <ul>
-        {{ range sort (\$pages.ByTitle) }}
-            {{ if eq (path.Dir .File.Path) \$section }}
+        {{ range sort ($pages.ByTitle) }}
+            {{ if eq (path.Dir .File.Path) $section }}
             <li>
                 <a href="{{ .Permalink }}">{{ .Title }}</a>
                 <span class="post-date">{{ .Date.Format "2006-01-02" }}</span>
