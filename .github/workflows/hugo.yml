@@ -18,7 +18,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      HUGO_VERSION: 0.121.1
+      HUGO_VERSION: 0.134.2
     steps:
       - name: Install Hugo CLI
         run: |
@@ -43,12 +43,23 @@ jobs:
           languageCode = 'zh-cn'
           title = 'Articles'
           theme = 'paper'
-          
+
+
+          [markup]
+            [markup.goldmark]
+              [markup.goldmark.extensions]
+                [markup.goldmark.extensions.passthrough]
+                  enable = true
+                  [markup.goldmark.extensions.passthrough.delimiters]
+                    block = [['\[', '\]'], ['$$', '$$']]
+                    inline = [['\(', '\)']]
+
           [params]
             github = 'XIUANGH'
             rss = true
             color = 'linen'
-            
+            math = true
+          
           [taxonomies]
             category = 'categories'
             tag = 'tags'
@@ -141,7 +152,19 @@ jobs:
           </style>
           {{ end }}
           EOL
-          
+
+          cat > layouts/partials/math.html <<EOL
+          <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+          <script>
+            MathJax = {
+              tex: {
+                displayMath: [['\\[', '\\]'], ['$$', '$$']],  // block
+                inlineMath: [['\\(', '\\)']]                  // inline
+              }
+            };
+          </script>
+          EOL
+
           # 创建内容目录结构
           mkdir -p content
           
