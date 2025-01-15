@@ -153,6 +153,7 @@ jobs:
           {{ end }}
           EOL
 
+          mkdir -p layouts/partials
           cat > layouts/partials/math.html <<EOL
           <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
           <script>
