@@ -70,6 +70,19 @@ jobs:
           
           # 下载并设置主题
           git clone https://github.com/nanxiaobei/hugo-paper themes/paper
+
+           # 将 MathJax 代码添加到主题的 single.html 模板
+          cat >> themes/paper/layouts/_default/single.html <<EOL
+          <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+          <script>
+            MathJax = {
+              tex: {
+                displayMath: [['\\[', '\\]'], ['$$', '$$']],  // block
+                inlineMath: [['\\(', '\\)']]                  // inline
+              }
+            };
+          </script>
+          EOL
           
           # 创建自定义主页模板
           mkdir -p layouts
@@ -121,7 +134,7 @@ jobs:
               {{ end }}
             </div>
           </article>
-           <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+          <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
           <script>
             MathJax = {
               tex: {
