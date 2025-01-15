@@ -1,0 +1,84 @@
+{{ define "main" }}
+<article class="post-single">
+<div class="post-content">
+    <!-- 按文件夹结构显示文章 -->
+    {{ \$pages := .Site.RegularPages }}
+    {{ \$sections := slice }}
+    {{ range \$pages }}
+    {{ \$section := path.Dir .File.Path }}
+    {{ if and (ne \$section ".") (ne \$section "posts") }}
+        {{ if not (in \$sections \$section) }}
+        {{ \$sections = \$sections | append \$section }}
+        {{ end }}
+    {{ end }}
+    {{ end }}
+    
+    <!-- 首先显示根目录文章 -->
+    {{ \$rootPages := where \$pages "File.Dir" "posts/" }}
+    {{ if \$rootPages }}
+    <div class="folder">
+    <ul>
+        {{ range sort \$rootPages "Title" }}
+        <li>
+            <a href="{{ .Permalink }}">{{ .Title }}</a>
+            <span class="post-date">{{ .Date.Format "2006-01-02" }}</span>
+        </li>
+        {{ end }}
+    </ul>
+    </div>
+    {{ end }}
+    
+    <!-- 然后显示其他文件夹 -->
+    {{ range sort \$sections }}
+    {{ \$section := . }}
+    <div class="folder">
+        <h3>📁 {{ . }}</h3>
+        <ul>
+        {{ range sort (\$pages.ByTitle) }}
+            {{ if eq (path.Dir .File.Path) \$section }}
+            <li>
+                <a href="{{ .Permalink }}">{{ .Title }}</a>
+                <span class="post-date">{{ .Date.Format "2006-01-02" }}</span>
+            </li>
+            {{ end }}
+        {{ end }}
+        </ul>
+    </div>
+    {{ end }}
+</div>
+</article>
+
+<style>
+.folder {
+margin-bottom: 1.5rem;
+border-radius: var(--radius);
+background: var(--secondary);
+}
+.folder h3 {
+margin: 0;
+padding: 1rem;
+font-size: 1.1rem;
+border-bottom: 1px solid var(--border);
+}
+.folder ul {
+list-style: none;
+padding: 1rem;
+margin: 0;
+}
+.folder li {
+margin: 0.5rem 0;
+}
+.folder li a {
+text-decoration: none;
+color: var(--primary);
+}
+.folder li a:hover {
+text-decoration: underline;
+}
+.post-date {
+    font-size: 0.9rem;
+    color: var(--tertiary);
+    margin-left: 0.5rem;
+  }
+</style>
+{{ end }}
