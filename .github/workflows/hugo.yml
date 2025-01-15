@@ -72,99 +72,10 @@ jobs:
           git clone https://github.com/nanxiaobei/hugo-paper themes/paper
 
            # 将 MathJax 代码添加到主题的 single.html 模板
-          cp custom/single.html themes/paper/layouts/_default/single.html
-
-          
-          # 创建自定义主页模板
-          mkdir -p layouts
-          cat > layouts/index.html <<EOL
-          {{ define "main" }}
-          <article class="post-single">
-            <div class="post-content">
-              <!-- 按文件夹结构显示文章 -->
-              {{ \$pages := .Site.RegularPages }}
-              {{ \$sections := slice }}
-              {{ range \$pages }}
-                {{ \$section := path.Dir .File.Path }}
-                {{ if and (ne \$section ".") (ne \$section "posts") }}
-                  {{ if not (in \$sections \$section) }}
-                    {{ \$sections = \$sections | append \$section }}
-                  {{ end }}
-                {{ end }}
-              {{ end }}
-              
-              <!-- 首先显示根目录文章 -->
-              {{ \$rootPages := where \$pages "File.Dir" "posts/" }}
-              {{ if \$rootPages }}
-              <div class="folder">
-                <ul>
-                  {{ range sort \$rootPages "Title" }}
-                    <li>
-                      <a href="{{ .Permalink }}">{{ .Title }}</a>
-                    </li>
-                  {{ end }}
-                </ul>
-              </div>
-              {{ end }}
-              
-              <!-- 然后显示其他文件夹 -->
-              {{ range sort \$sections }}
-                {{ \$section := . }}
-                <div class="folder">
-                  <h3>📁 {{ . }}</h3>
-                  <ul>
-                    {{ range sort (\$pages.ByTitle) }}
-                      {{ if eq (path.Dir .File.Path) \$section }}
-                        <li>
-                          <a href="{{ .Permalink }}">{{ .Title }}</a>
-                        </li>
-                      {{ end }}
-                    {{ end }}
-                  </ul>
-                </div>
-              {{ end }}
-            </div>
-          </article>
-          <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-          <script>
-            MathJax = {
-              tex: {
-                displayMath: [['\\[', '\\]'], ['$$', '$$']],  // block
-                inlineMath: [['\\(', '\\)']]                  // inline
-              }
-            };
-          </script>
-          
-          <style>
-          .folder {
-            margin-bottom: 1.5rem;
-            border-radius: var(--radius);
-            background: var(--secondary);
-          }
-          .folder h3 {
-            margin: 0;
-            padding: 1rem;
-            font-size: 1.1rem;
-            border-bottom: 1px solid var(--border);
-          }
-          .folder ul {
-            list-style: none;
-            padding: 1rem;
-            margin: 0;
-          }
-          .folder li {
-            margin: 0.5rem 0;
-          }
-          .folder li a {
-            text-decoration: none;
-            color: var(--primary);
-          }
-          .folder li a:hover {
-            text-decoration: underline;
-          }
-          </style>
-          {{ end }}
-          EOL
+          # cp custom/single.html themes/paper/layouts/_default/single.html
+          cp custom/math.html themes/paper/layouts/partials/math.html
+          cp custom/head.html themes/paper/layouts/partials/head.html
+        
 
           
 
