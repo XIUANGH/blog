@@ -47,12 +47,14 @@ jobs:
 
           [markup]
             [markup.goldmark]
+              [markup.goldmark.renderer]
+                unsafe = true
               [markup.goldmark.extensions]
                 [markup.goldmark.extensions.passthrough]
                   enable = true
                   [markup.goldmark.extensions.passthrough.delimiters]
                     block = [['\[', '\]'], ['$$', '$$']]
-                    inline = [['\(', '\)']]
+                    inline = [['\(', '\)'],["$", "$"]]
 
           [params]
             github = 'XIUANGH'
@@ -64,8 +66,7 @@ jobs:
             category = 'categories'
             tag = 'tags'
             
-          [markup.goldmark.renderer]
-            unsafe = true
+
           EOL
           
           # 下载并设置主题
