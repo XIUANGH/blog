@@ -143,6 +143,8 @@ jobs:
               mv "$img" "$target_img_dir/"
             fi
           done
+        
+          tree
           
 
       - name: Build with Hugo
