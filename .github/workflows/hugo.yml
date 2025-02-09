@@ -124,10 +124,7 @@ jobs:
           done
           
           # 处理图片文件，确保它们跟随 .md 文件一起移动
-          find . -type f \( -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.gif" -o -iname "*.svg" \)
-            -not -path "./themes/*" -not -path "./archetypes/*" \
-            -not -path "./content/*" -not -path "./layouts/*" -not -path "./custom/*" \
-          | while read img; do
+          find . -type f  -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.gif" -o -iname "*.svg" -not -path "./themes/*" -not -path "./archetypes/*" -not -path "./content/*" -not -path "./layouts/*" -not -path "./custom/*" | while read img; do
             # 获取相对路径
             rel_img_path=${img#./}
             img_dir=$(dirname "$rel_img_path")
