@@ -19,7 +19,10 @@
     {{ end }}
   </header>
 
-  <section>{{ .Content }}</section>
+  <section>{{/* 添加图片路径处理逻辑 */}}
+    {{ $content := .Content }}
+    {{ $content := replaceRE `<img src="[^"]*?/([^/"]+?)"` `<img src="${1}"` $content | safeHTML }}
+    {{ $content }}</section>
 
   <!-- Post Tags -->
   {{ if .Params.tags }}
@@ -124,16 +127,6 @@
     async
   ></script>
   {{ end }}
-
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-    <script>
-    MathJax = {
-        tex: {
-        displayMath: [['\\[', '\\]'], ['$$', '$$']],  // block
-        inlineMath: [['\\(', '\\)']]                  // inline
-        }
-    };
-    </script>
 </article>
 
 {{ end }}

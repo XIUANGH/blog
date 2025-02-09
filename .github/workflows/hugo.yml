@@ -74,7 +74,7 @@ jobs:
 
            # 将 MathJax 代码添加到主题的 single.html 模板
            mkdir -p layouts
-          # cp custom/single.html themes/paper/layouts/_default/single.html
+          cp custom/single.html themes/paper/layouts/_default/single.html
           cp custom/math.html themes/paper/layouts/partials/math.html
           cp custom/head.html themes/paper/layouts/partials/head.html
           cp custom/index.html layouts/index.html
