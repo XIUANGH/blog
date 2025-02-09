@@ -123,19 +123,27 @@ jobs:
             fi
           done
           
-          # **新增：移动图片文件到 static/**
-          mkdir -p static
-          find . -type f \( -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.gif" -o -iname "*.svg" \) -not -path "./themes/*" -not -path "./archetypes/*" -not -path "./content/*" -not -path "./layouts/*" -not -path "./custom/*" | while read img; do
+          # 处理图片文件，确保它们跟随 .md 文件一起移动
+          find . -type f $ -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.gif" -o -iname "*.svg" $ \
+            -not -path "./themes/*" -not -path "./archetypes/*" \
+            -not -path "./content/*" -not -path "./layouts/*" -not -path "./custom/*" \
+          | while read img; do
+            # 获取相对路径
             rel_img_path=${img#./}
             img_dir=$(dirname "$rel_img_path")
-            
+
+            # 目标目录（与 Markdown 文件一致）
             if [ "$img_dir" != "." ]; then
-              mkdir -p "static/$img_dir"
-              mv "$img" "static/$rel_img_path"
+              target_img_dir="content/$img_dir"
+              mkdir -p "$target_img_dir"
+              mv "$img" "$target_img_dir/"
             else
-              mv "$img" "static/"
+              target_img_dir="content/posts"
+              mkdir -p "$target_img_dir"
+              mv "$img" "$target_img_dir/"
             fi
           done
+          
 
       - name: Build with Hugo
         env:
