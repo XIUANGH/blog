@@ -122,18 +122,18 @@ jobs:
               fi
             fi
           done
-
+          
           # **新增：移动图片文件到 static/**
-          mkdir -p static/images
+          mkdir -p static
           find . -type f \( -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.gif" -o -iname "*.svg" \) -not -path "./themes/*" -not -path "./archetypes/*" -not -path "./content/*" -not -path "./layouts/*" -not -path "./custom/*" | while read img; do
             rel_img_path=${img#./}
             img_dir=$(dirname "$rel_img_path")
             
             if [ "$img_dir" != "." ]; then
-              mkdir -p "static/images/$img_dir"
-              mv "$img" "static/images/$rel_img_path"
+              mkdir -p "static/$img_dir"
+              mv "$img" "static/$rel_img_path"
             else
-              mv "$img" "static/images/"
+              mv "$img" "static/"
             fi
           done
 
