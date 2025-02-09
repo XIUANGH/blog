@@ -128,10 +128,13 @@ jobs:
             # 获取相对路径
             rel_img_path=${img#./}
             img_dir=$(dirname "$rel_img_path")
-
+            
+            # 如果目录以 .assets 结尾，则去除该后缀
+            target_dir=${img_dir%.assets}
+            
             # 目标目录（与 Markdown 文件一致）
             if [ "$img_dir" != "." ]; then
-              target_img_dir="content/$img_dir"
+              target_img_dir="content/$target_dir"
               mkdir -p "$target_img_dir"
               mv "$img" "$target_img_dir/"
             else
