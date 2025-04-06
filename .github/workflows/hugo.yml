@@ -93,8 +93,9 @@ jobs:
             rel_path=${file#./}
             dir_path=$(dirname "$rel_path")
             
-            # 安全处理文件名用于URL - 但保留原始文件名作为标题
-            safe_file_name=$(basename "$file" .md | iconv -t ASCII//TRANSLIT//IGNORE | sed -E 's/[^a-zA-Z0-9]+/-/g' | sed -E 's/^-+|-+$//g' | tr A-Z a-z)
+            # 安全处理文件名用于URL
+            safe_file_name=$(basename "$file" .md | iconv -f UTF-8 -t ASCII//TRANSLIT//IGNORE 2>/dev/null || echo "post")
+            safe_file_name=$(echo "$safe_file_name" | sed -E 's/[^a-zA-Z0-9]+/-/g' | sed -E 's/^-+|-+$//g' | tr '[:upper:]' '[:lower:]')
             orig_title=$(basename "$file" .md)
             
             # 如果不是在根目录，创建对应的内容目录
@@ -106,18 +107,18 @@ jobs:
               target_path="content/posts/${safe_file_name}.md"
             fi
             
-            # 添加正确编码的Front Matter
+            # 添加正确编码的Front Matter - 修复YAML语法
             temp_file=$(mktemp)
             echo "---" > "$temp_file"
             echo "title: \"$orig_title\"" >> "$temp_file"
-            echo "date: $(git log -1 --format=%aI -- \"$file\")" >> "$temp_file"
-            echo "lastmod: $(git log -1 --format=%aI -- \"$file\")" >> "$temp_file"
-            echo "url: \"$(basename \"$safe_file_name\")\"" >> "$temp_file"
+            echo "date: $(git log -1 --format=%aI -- \"$file\" 2>/dev/null || date -Iseconds)" >> "$temp_file"
+            echo "lastmod: $(git log -1 --format=%aI -- \"$file\" 2>/dev/null || date -Iseconds)" >> "$temp_file"
             echo "---" >> "$temp_file"
             
-            # 添加原始文件内容，但跳过已有的Front Matter
+            # 添加原始文件内容
             if grep -q "^---" "$file"; then
-              sed '1,/^---$/d;/^---$/,$!d;/^---$/d' "$file" >> "$temp_file"
+              # 这里只是简单将原文件内容追加，避免复杂的sed命令
+              cat "$file" >> "$temp_file"
             else
               cat "$file" >> "$temp_file"
             fi
