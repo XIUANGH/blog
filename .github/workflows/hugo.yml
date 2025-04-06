@@ -44,7 +44,6 @@ jobs:
           title = 'Articles'
           theme = 'paper'
 
-
           [markup]
             [markup.goldmark]
               [markup.goldmark.renderer]
@@ -61,11 +60,14 @@ jobs:
             rss = true
             color = 'linen'
             math = true
+            useUnicode = true
           
           [taxonomies]
             category = 'categories'
             tag = 'tags'
             
+          [permalinks]
+            posts = "/:filename/"
 
           EOL
           
@@ -91,36 +93,37 @@ jobs:
             rel_path=${file#./}
             dir_path=$(dirname "$rel_path")
             
+            # 安全处理文件名用于URL - 但保留原始文件名作为标题
+            safe_file_name=$(basename "$file" .md | iconv -t ASCII//TRANSLIT//IGNORE | sed -E 's/[^a-zA-Z0-9]+/-/g' | sed -E 's/^-+|-+$//g' | tr A-Z a-z)
+            orig_title=$(basename "$file" .md)
+            
             # 如果不是在根目录，创建对应的内容目录
             if [ "$dir_path" != "." ]; then
               mkdir -p "content/$dir_path"
-              target_path="content/$rel_path"
+              target_path="content/$dir_path/${safe_file_name}.md"
             else
-              target_path="content/posts/$(basename "$rel_path")"
+              mkdir -p "content/posts"
+              target_path="content/posts/${safe_file_name}.md"
             fi
             
-            # 移动文件并添加/更新前置数据
-            if [ -f "$file" ]; then
-              title=$(basename "$file" .md)
-              date=$(git log -1 --format=%aI -- "$file")
-              lastmod=$(git log -1 --format=%aI -- "$file")
-              
-              # 如果文件没有 front matter，添加它
-              if ! grep -q "^---" "$file"; then
-                temp_file=$(mktemp)
-                echo "---" > "$temp_file"
-                echo "title: \"$title\"" >> "$temp_file"
-                echo "date: $date" >> "$temp_file"
-                echo "lastmod: $lastmod" >> "$temp_file"
-                echo "---" >> "$temp_file"
-                cat "$file" >> "$temp_file"
-                mkdir -p $(dirname "$target_path")
-                mv "$temp_file" "$target_path"
-              else
-                mkdir -p $(dirname "$target_path")
-                mv "$file" "$target_path"
-              fi
+            # 添加正确编码的Front Matter
+            temp_file=$(mktemp)
+            echo "---" > "$temp_file"
+            echo "title: \"$orig_title\"" >> "$temp_file"
+            echo "date: $(git log -1 --format=%aI -- \"$file\")" >> "$temp_file"
+            echo "lastmod: $(git log -1 --format=%aI -- \"$file\")" >> "$temp_file"
+            echo "url: \"$(basename \"$safe_file_name\")\"" >> "$temp_file"
+            echo "---" >> "$temp_file"
+            
+            # 添加原始文件内容，但跳过已有的Front Matter
+            if grep -q "^---" "$file"; then
+              sed '1,/^---$/d;/^---$/,$!d;/^---$/d' "$file" >> "$temp_file"
+            else
+              cat "$file" >> "$temp_file"
             fi
+            
+            mkdir -p $(dirname "$target_path")
+            mv "$temp_file" "$target_path"
           done
           
           # 处理图片文件，确保它们跟随 .md 文件一起移动
